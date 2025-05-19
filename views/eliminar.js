@@ -1,7 +1,7 @@
 export async function init() {
   const cont = document.getElementById("lista-eliminar");
 
-  const res = await fetch('http://localhost:3000/motos');
+  const res = await fetch('https://taller-backend-production.up.railway.app');
   const motos = await res.json();
 
   if (motos.length === 0) {
@@ -23,7 +23,7 @@ export async function init() {
 
   window.eliminar = async function (id) {
     if (confirm("¿Eliminar esta moto?")) {
-      await fetch(`http://localhost:3000/motos/${id}`, {
+      await fetch(`https://taller-backend-production.up.railway.app/${id}`, {
         method: "DELETE"
       });
       init(); // recargar

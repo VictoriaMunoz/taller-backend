@@ -65,7 +65,7 @@ export function init() {
 
   async function enviarAlServidor(data) {
     try {
-      const res = await fetch('http://localhost:3000/motos', {
+      const res = await fetch('https://taller-backend-production.up.railway.app', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

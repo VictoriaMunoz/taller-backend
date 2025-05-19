@@ -66,7 +66,7 @@ export async function init() {
   });
 
   async function actualizarEstado(id, motoActualizada) {
-    await fetch(`http://localhost:3000/motos/${id}`, {
+    await fetch(`https://taller-backend-production.up.railway.app/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(motoActualizada)
