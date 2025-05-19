@@ -49,11 +49,12 @@ app.post('/motos', async (req, res) => {
     const nuevaMoto = new Moto(req.body);
     await nuevaMoto.save();
     res.status(201).json(nuevaMoto);
-  } catch (err) {
-    console.error('Error al guardar moto:', err);
-    res.status(500).json({ error: 'Error al guardar moto' });
+  } catch (error) {
+    console.error('❌ Error al guardar:', error);
+    res.status(400).send('Error al guardar moto. Verifica los datos enviados.');
   }
 });
+
 
 // Eliminar moto por ID
 app.delete('/motos/:id', async (req, res) => {
