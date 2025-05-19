@@ -1,31 +1,12 @@
+import { API_URL } from '../config.js';
+
 export function init() {
   const form = document.getElementById("form-registro");
-
-  ["cedula", "telefono", "kilometraje"].forEach(id => {
-    const input = form.querySelector(`#${id}`);
-    input.addEventListener("input", () => {
-      input.value = input.value.replace(/\D/g, "");
-    });
-  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const campos = [
-      "nombre", "cedula", "telefono", "correo",
-      "placa", "chasis", "kilometraje", "tipo", "trabajo"
-    ];
-
-    for (const id of campos) {
-      const campo = form[id];
-      if (!campo.value.trim()) {
-        alert(`El campo "${campo.placeholder}" es obligatorio`);
-        campo.focus();
-        return;
-      }
-    }
-
-    const ahora = new Date().toISOString();
+    const now = new Date().toISOString();
 
     const ingreso = {
       nombre: form.nombre.value.trim(),
@@ -39,44 +20,47 @@ export function init() {
       trabajo: form.trabajo.value.trim(),
       observaciones: form.observaciones.value.trim(),
       estado: "En reparación",
-      ingreso: ahora,
-      estadoHistorial: [
-        { estado: "En reparación", fecha: ahora }
-      ],
-      fotos: []
+      ingreso: now,
+      estadoHistorial: [{ estado: "En reparación", fecha: now }],
+      fotos: [],
     };
 
-    const archivos = form.fotos.files;
-    if (archivos.length > 0) {
-      let cargadas = 0;
-      for (let i = 0; i < archivos.length; i++) {
+    const files = form.fotos.files;
+
+    if (files.length > 0) {
+      let loaded = 0;
+      for (let i = 0; i < files.length; i++) {
         const reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = (e) => {
           ingreso.fotos.push(e.target.result);
-          cargadas++;
-          if (cargadas === archivos.length) enviarAlServidor(ingreso);
+          loaded++;
+          if (loaded === files.length) enviar(ingreso);
         };
-        reader.readAsDataURL(archivos[i]);
+        reader.readAsDataURL(files[i]);
       }
     } else {
-      enviarAlServidor(ingreso);
+      enviar(ingreso);
     }
   });
 
-  async function enviarAlServidor(data) {
+  async function enviar(data) {
     try {
-      const res = await fetch('https://taller-backend-production.up.railway.app', {
+      const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
+
       if (res.ok) {
-        alert("Moto registrada exitosamente.");
+        alert("✅ Moto registrada correctamente");
         document.getElementById("form-registro").reset();
+      } else {
+        alert("❌ Error al registrar la moto");
+        console.error(await res.text());
       }
     } catch (err) {
-      console.error("Error al guardar moto:", err);
-      alert("No se pudo guardar la moto.");
+      console.error("Error de red:", err);
+      alert("❌ No se pudo conectar al servidor.");
     }
   }
 }
